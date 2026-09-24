@@ -8,10 +8,12 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
 
-spark = SparkSession.builder.getOrCreate()
+def spark_session():
 
+    spark = SparkSession.builder \
+        .appName("IBEX35") \
+        .config('spark.driver.extraClassPath', r".\Connection\mysql-connector-j-9.5.0.jar") \
+        .getOrCreate()\
 
-data_frame = spark.read.option("header", True).option("sep", ";").option("dateFormat",
-"dd/MM/yyyy").csv("ibex35_close-2024.csv")
+    return spark
 
-data_frame.show()
