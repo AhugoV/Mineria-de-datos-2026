@@ -27,10 +27,10 @@ df.withColumnRenamed("Fecha", "Día").show(10)
 df_limpio = df.drop("Fecha")
 df_limpio_2 = df.drop("Fecha")
 
-#for i in df_limpio.columns:
-    #df_limpio.agg({i: "min"}).show(truncate=False)
-    #df_limpio.agg({i: "max"}).show(truncate=False)
-    #df_limpio.agg({i: "avg"}).show(truncate=False) #Hacer join después.
+for i in df_limpio.columns:
+    df_limpio.agg({i: "min"}).show(truncate=False)
+    df_limpio.agg({i: "max"}).show(truncate=False)
+    df_limpio.agg({i: "avg"}).show(truncate=False) #Hacer join después.
     #Lo he hecho sin hacer cast porque no me he dado cuenta.
 
 

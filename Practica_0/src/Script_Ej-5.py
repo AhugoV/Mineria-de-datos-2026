@@ -42,3 +42,6 @@ df.show(1, truncate=False)
 
 cols_aena_bbva = ["AENA", "AENA Cuartil", "BBVA", "BBVA Cuartil"]
 df.select(*cols_aena_bbva).show(df.count(), truncate=False)
+
+
+#Para algunos ejercicios, he usado la ia para preguntar que funciones de pyspark del pdf tenia que usar porque al principio me estaba haciendo un lio.

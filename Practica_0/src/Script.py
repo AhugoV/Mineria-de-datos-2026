@@ -39,29 +39,4 @@ data_frame_new = data_frame_new.withColumnRenamed("Fe", "Fecha")
 data_frame_new.show(6)
 data_frame_new.printSchema()
 
-#Ej 2-a
-print("Ejercicio 2-a")
-
-a = data_frame_new.count()
-
-print(a, "filas")
-
-data_frame_new = data_frame_new.dropDuplicates()
-data_frame_new.show(truncate=False)
-
-b = data_frame_new.count()
-print(b, "filas")
-print("Se han eliminado", a-b, "filas duplicadas")
-n = data_frame_new.columns
-print("Hay información de:", len(n),"empresas")
-
-#Ej 2-b
-print("Ejercicio 2-b")
-
-print("Fecha mínima y máxima de los datos del DataFrame")
-data_frame_new.agg({"Fecha": "min"}).show(truncate=False)
-data_frame_new.agg({"Fecha": "max"}).show(truncate=False)
-
-print("Hay ", n-1, " días de información de las empresas")
-
-#database_spark(data_frame_new)
+database_spark(data_frame_new)
