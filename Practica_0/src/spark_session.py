@@ -12,7 +12,7 @@ def spark_session():
 
     spark = SparkSession.builder \
         .appName("IBEX35") \
-        .config('spark.driver.extraClassPath', r".\Connection\mysql-connector-j-9.5.0.jar") \
+        .config('spark.driver.extraClassPath', r".\aplicacion2026\Connection\mysql-connector-j-9.5.0.jar") \
         .getOrCreate()\
 
     return spark

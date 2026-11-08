@@ -13,7 +13,7 @@ spark = spark_session()
 print("Ejercicio 1-a")
 
 data_frame = spark.read.option("header", True).option("sep", ";").option("dateFormat",
-"yyyy/MM/dd").csv(r"data\ibex35_close-2024.csv")
+"yyyy/MM/dd").csv(r"aplicacion2026\data\ibex35_close-2024.csv")
 
 data_frame.printSchema()
 
