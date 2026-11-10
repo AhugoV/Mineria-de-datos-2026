@@ -275,11 +275,11 @@ def ejecutar_ej13(spark):
 
     df_fact = spark.read.format("delta").load("aplicacion2026/data/lake/gold/fact_cotizaciones")
     df_dim = spark.read.format("delta").load("aplicacion2026/data/lake/gold/dim_empresa")
+
+    # 2. Exportamos la Dimensión usando coalesce(1)
+    df_dim.coalesce(1).write.mode("overwrite").parquet("aplicacion2026/data/export/gold/dim_empresa")
     
-    df_dim.write.mode("overwrite").parquet("aplicacion2026/data/export/gold/dim_empresa")
-    
-    # Exportamos los hechos particionados por cada ticker.
-    # Esto crea una subcarpeta para cada empresa. 
-    df_fact.write.mode("overwrite").partitionBy("Ticker").parquet("aplicacion2026/data/export/gold/fact_cotizaciones")
+    # 3. Exportamos los Hechos usando coalesce(1) en lugar de partitionBy
+    df_fact.coalesce(1).write.mode("overwrite").parquet("aplicacion2026/data/export/gold/fact_cotizaciones")
     
     return df_fact.count(), df_dim.count()
