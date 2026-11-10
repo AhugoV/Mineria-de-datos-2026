@@ -236,14 +236,14 @@ def ejecutar_ej8(spark):
 
 def ejecutar_ej9(spark, df_dimension_empresa):
 
-    # Aplicamos la limpieza de texto a la dimensión de Yahoo
+    # Aplicamos la limpieza de texto a la dimensión de yahoo
     df_dim_silver = df_dimension_empresa.withColumn("Sector_Yahoo_EN", initcap(trim(col("Sector_Yahoo_EN"))))
     
     # Renombramos la columna para estandarizar
     df_dim_silver = df_dim_silver.withColumnRenamed("Sector_Yahoo_EN", "Sector")
     df_dim_silver.write.format("delta").mode("overwrite").save("aplicacion2026/data/lake/silver/dim_empresa")
     
-    # Los precios de Yahoo ya vienen limpios, solo los movemos de Bronze a Silver
+    # Los precios de yahoo ya vienen limpios, solo los movemos de bronze a silver
     df_precios = spark.read.format("delta").load("aplicacion2026/data/lake/bronze/ibex")
     df_precios.write.format("delta").mode("overwrite").save("aplicacion2026/data/lake/silver/ibex")
     
@@ -255,14 +255,14 @@ def ejecutar_ej10(spark):
     df_dim = spark.read.format("delta").load("aplicacion2026/data/lake/silver/dim_empresa")
     df_sent = spark.read.format("delta").load("aplicacion2026/data/lake/silver/sentimiento")
     
-    # Traemos temporalmente el Sector a la tabla de precios cruzando por ticker
+    # Traemos temporalmente el sector a la tabla de precios cruzando por ticker
     df_fact = df_precios.join(df_dim, on="Ticker", how="inner")
     
     # Cruzamos con la tabla de sentimiento usando la fecha y el sector
-    # ¡¡¡¡En yahoo la fecha se llama Date, en el csv se llama Fecha!!!!. IMPORTANTE ESTO
+    # ¡¡¡¡En yahoo la fecha se llama sate, en el csv se llama fecha!!!!. IMPORTANTE ESTO
     df_fact = df_fact.join(df_sent,(df_fact["Date"] == df_sent["Fecha"]) & (df_fact["Sector"] == df_sent["Sector"]),how="left") # Mantenemos los precios aunque ese día no haya sentimiento
     
-    # En el diseño DE estrella la tabla de hechos solo debe tener métricas como Slose, Sentimiento y Ticker O Date, para ir agrupaando los datos. 
+    # En el diseño de estrella la tabla de hechos solo debe tener métricas como slose, sentimiento y ticker o date, para ir agrupaando los datos. 
     # Sector y fecha los borramos.
     df_fact = df_fact.drop(df_sent["Fecha"]).drop(df_sent["Sector"]).drop(df_dim["Nombre_Empresa"]).drop(df_dim["Sector"])
     
@@ -276,10 +276,8 @@ def ejecutar_ej13(spark):
     df_fact = spark.read.format("delta").load("aplicacion2026/data/lake/gold/fact_cotizaciones")
     df_dim = spark.read.format("delta").load("aplicacion2026/data/lake/gold/dim_empresa")
 
-    # 2. Exportamos la Dimensión usando coalesce(1)
+    # Exportamos la dimensión y los hechos usando coalesce, porque asi lo requiere la práctica 2 de power bi.
     df_dim.coalesce(1).write.mode("overwrite").parquet("aplicacion2026/data/export/gold/dim_empresa")
-    
-    # 3. Exportamos los Hechos usando coalesce(1) en lugar de partitionBy
     df_fact.coalesce(1).write.mode("overwrite").parquet("aplicacion2026/data/export/gold/fact_cotizaciones")
     
     return df_fact.count(), df_dim.count()
