@@ -55,7 +55,7 @@ def main():
         
         print("""
         - En la primera ejecución, comprobamos que el número de filas sube porque se insertan los registros de los días nuevos.
-        - Al ejecutar por segunda vez, el total de filas se mantiene intacto. Merge inserta los datos que no existen pero al no detectar filas nuevas en la segunda pasada, no duplica información.""")
+        - Al ejecutar por segunda vez, el total de filas se mantiene intacto. Merge inserta los datos que no existen pero al no detectar filas nuevas en la segunda pasada, no duplica la información.""")
 
     elif ejercicio == "5":
 
@@ -103,19 +103,19 @@ def main():
 
     elif ejercicio == "10":
 
-        print("\nEj10")
+        print("Ej10")
         df_fact = op.ejecutar_ej10(spark)
-        print("Tabla de Hechos en la capa Gold:")
+        print("Tabla de hechos en la capa gold:")
         df_fact.select("Date", "Ticker", "Close", "Sentimiento").show(5)
 
     elif ejercicio == "13":
 
-        print("\nEj13")
+        print("Ej13")
         
         filas_fact, filas_dim = op.ejecutar_ej13(spark)
         
-        print(f"Tabla de Hechos exportada: {filas_fact} registros que hemos particionado por Ticker.")
-        print(f"Tabla de Dimensión exportada: {filas_dim} registros.")
+        print(f"Tabla de hechos exportada: {filas_fact} registros que hemos particionado por Ticker.")
+        print(f"Tabla de dimensión exportada: {filas_dim} registros.")
     
 if __name__ == "__main__":
     main()

@@ -84,7 +84,7 @@ def ejecutar_ej4(spark, df_tickers, fecha_inicio, fecha_fin):
     print(f"Versión actual de la tabla IBEX: {version_actual}")
     
     filas_antes = spark.read.format("delta").load("aplicacion2026/data/lake/bronze/ibex").count()
-    print(f"Filas ANTES del MERGE: {filas_antes}")
+    print(f"Filas antes del merge: {filas_antes}")
     
     lista_columnas = df_tickers.columns
     df_nuevos_datos = None
@@ -103,7 +103,7 @@ def ejecutar_ej4(spark, df_tickers, fecha_inicio, fecha_fin):
         .execute())
         
     filas_despues_1 = spark.read.format("delta").load("aplicacion2026/data/lake/bronze/ibex").count()
-    print(f"Filas después de la PRIMERA ejecución del MERGE: {filas_despues_1}")
+    print(f"Filas después de la primera ejecución del merge: {filas_despues_1}")
     
     (tabla_ibex.alias("d")
         .merge(df_nuevos_datos.alias("n"), "d.Ticker = n.Ticker AND d.Date = n.Date")
@@ -111,7 +111,7 @@ def ejecutar_ej4(spark, df_tickers, fecha_inicio, fecha_fin):
         .execute())
         
     filas_despues_2 = spark.read.format("delta").load("aplicacion2026/data/lake/bronze/ibex").count()
-    print(f"Filas después de la SEGUNDA ejecución del MERGE: {filas_despues_2}")
+    print(f"Filas después de la segunda ejecución del merge: {filas_despues_2}")
 
 def ejecutar_ej5(spark):
 
@@ -125,8 +125,7 @@ def ejecutar_ej5(spark):
     try:
         df_mas5.write.format("delta").mode("append").save("aplicacion2026/data/lake/bronze/ibex")
     except AnalysisException as e:
-        print("¡Operación rechazada por Delta Lake (Schema Enforcement)!")
-        print(f"Error devuelto: {str(e).split(';')[0]}") # Imprimimos solo la primera parte del error para no saturar
+        print("Operación rechazada por delta lake schema enforcement")
 
     print("Ej5b")
     # Repetimos la escritura pero activando la evolución de esquema mergeSchema
@@ -134,18 +133,17 @@ def ejecutar_ej5(spark):
         .mode("append")
         .option("mergeSchema", "true")
         .save("aplicacion2026/data/lake/bronze/ibex"))
-    print("Escritura completada con éxito. La columna 'Close_mas5' ha sido integrada en la tabla.")
 
     print("Ej5c")
     tabla_ibex = DeltaTable.forPath(spark, "aplicacion2026/data/lake/bronze/ibex")
     
     filas_antes = spark.read.format("delta").load("aplicacion2026/data/lake/bronze/ibex").count()
-    print(f"Filas ANTES: {filas_antes}")
+    print(f"Filas antes: {filas_antes}")
     
     tabla_ibex.delete("Ticker = 'BBVA.MC'")
     
     filas_despues = spark.read.format("delta").load("aplicacion2026/data/lake/bronze/ibex").count()
-    print(f"Filas DESPUÉS: {filas_despues}")
+    print(f"Filas depués: {filas_despues}")
 
     print("Ej5d")
     print("Historial tras las operaciones --------------------------------------------")
@@ -157,7 +155,7 @@ def ejecutar_ej5(spark):
     version_actual = tabla_ibex.history(1).select("version").collect()[0][0]
     version_antigua = version_actual - 2
     
-    print(f"--- Leyendo la versión antigua (v{version_antigua}) con versionAsOf ---")
+    print(f"Leyendo la versión antigua (v{version_antigua}) con versionAsOf ---------------------")
     df_v_antigua = spark.read.format("delta").option("versionAsOf", version_antigua).load("aplicacion2026/data/lake/bronze/ibex")
     
     print(f"Columnas en la versión antigua: {df_v_antigua.columns}")
@@ -175,20 +173,18 @@ def ejecutar_ej6(spark):
     version_actual = tabla_ibex.history(1).select("version").collect()[0][0]
     version_restaurar = version_actual - 2
     
-    print(f"Restaurando la tabla a la versión {version_restaurar} (estado tras el Ejercicio 4)...")
+    print(f"Restaurando la tabla a la versión {version_restaurar} tras el ejercicio 4")
     
     tabla_ibex.restoreToVersion(version_restaurar)
     
-    print("--- Historial DESPUÉS del RESTORE ---")
+    print("Historial DESPUÉS del RESTORE ---------------------")
     tabla_ibex.history().show()
     
     df_actual = spark.read.format("delta").load("aplicacion2026/data/lake/bronze/ibex")
     
     filas_bbva = df_actual.filter("Ticker = 'BBVA.MC'").count()
-    columnas = df_actual.columns
     
-    print(f"Filas de BBVA en la tabla actual (restaurada): {filas_bbva}")
-    print(f"¿Existe la columna 'Close_mas5' en la tabla actual?: {'Close_mas5' in columnas}")
+    print(f"Filas de BBVA en la tabla actual restaurada: {filas_bbva}")
 
 def ejecutar_ej7(spark, df_tickers):
     
