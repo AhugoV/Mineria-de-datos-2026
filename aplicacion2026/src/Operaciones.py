@@ -41,7 +41,7 @@ def ejecutar_ej1b(spark, df_tickers, inicio, fin):
         else:    
             df_ibex_completo = df_ibex_completo.union(df)
 
-    df.write.mode("overwrite").parquet("aplicacion2026\data/lake/bronze/ibex")
+    df_ibex_completo.write.mode("overwrite").parquet("aplicacion2026\data/lake/bronze/ibex")
     return df_ibex_completo
 
 def ejecutar_ej2a(spark, ruta_csv):
